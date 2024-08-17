@@ -32,45 +32,37 @@ const generatePassword = (len) => {
   for (let index = 0; index < len; index++) {
     generator += data[~~(Math.random() * data.length)];
   }
-  saveButton.disabled = false;
-  copyButton.disabled = false;
   return generator;
-};
-
-const showWarning = (message) => {
-  const warningModal = new bootstrap.Modal(document.getElementById("warningModal"));
-  const warningMessage = document.getElementById("warningMessage");
-  warningMessage.textContent = message;
-
-  // Tambahkan kelas untuk animasi
-  warningMessage.classList.add("opacity-0");
-  warningMessage.style.transform = "translateY(20px)";
-
-  warningModal.show();
-
-  // Animasi dengan setTimeout
-  setTimeout(() => {
-    warningMessage.classList.remove("opacity-0");
-    warningMessage.classList.add("opacity-100", "transition", "duration-500");
-    warningMessage.style.transform = "translateY(0)";
-  }, 100);
 };
 
 const getPassword = () => {
   const newPassword = generatePassword(parseInt(passwordLength.value));
-  if (newPassword) {
-    password.value = newPassword;
-  }
+  password.value = newPassword;
+
+  // Mengaktifkan atau menonaktifkan tombol berdasarkan kondisi password
+  saveButton.disabled = !newPassword; // Disable save button jika password kosong
+  copyButton.disabled = !newPassword; // Disable copy button jika password kosong
 };
 
 const copyPassword = () => {
-  navigator.clipboard.writeText(password.value);
-  alert("Password telah disalin!");
+  if (password.value) {
+    navigator.clipboard.writeText(password.value);
+    alert("Password telah disalin!");
+  }
 };
 
 const savePassword = () => {
-  document.title = password.value;
-  saveButton.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(`Password saya: ${document.title}`));
-  saveButton.setAttribute("download", "MyPasswordGenerator.txt");
-  alert("Password telah disimpan!");
+  if (password.value) {
+    const passwordText = password.value;
+    const fileName = "MyPasswordGenerator.txt";
+    const fileContent = `Password saya: ${passwordText}`;
+
+    saveButton.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(fileContent));
+    saveButton.setAttribute("download", fileName);
+    alert("Password telah disimpan!");
+  }
 };
+
+// Initial state: disable buttons
+saveButton.disabled = true;
+copyButton.disabled = true;
